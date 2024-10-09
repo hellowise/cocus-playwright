@@ -1,16 +1,30 @@
-import { test } from '@playwright/test'
-import { LoginPage } from '../pages/login.page'
+import { test } from '../utils/fixtures'
 
-test('Logged in user can add products to bag', {
+test('Logged in user can add items to bag', {
     tag: '@positive'
-}, async ({ page }) => {
-    const loginPage = new LoginPage(page)
-
+}, async ({ homePage, loginPage, productsPage }) => {
     await test.step('Log in through home page', async () => {
-        await loginPage.login(page)
+        await loginPage.login()
         await loginPage.validateUserIsLoggedIn()
     })
-    await test.step('User can add products to bag', async () => {
-        
+    await test.step('Add item to bag', async () => {
+        await homePage.navigateToProducts('Womens', 'Accessories')
+        await productsPage.addRandomItemToBag()
+    })
+    await test.step('Proceed to checkout page', async () => {
+        await homePage.goToCheckout()
+    })
+})
+
+test('Logged out user can add items to bag', {
+    tag: '@positive'
+}, async ({ homePage, productsPage }) => {
+    await test.step('Add item to bag', async () => {
+        await homePage.loadPage()
+        await homePage.navigateToProducts('Womens', 'Accessories')
+        await productsPage.addRandomItemToBag()
+    })
+    await test.step('Proceed to checkout page', async () => {
+        await homePage.goToCheckout()
     })
 })

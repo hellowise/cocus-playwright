@@ -4,10 +4,10 @@ import { BasePage } from './base.page'
 export class AccountPage extends BasePage {
 
     public accountSidebar: Locator
-    public summary: Locator
-    public transactions: Locator
-    public return: Locator
-    public delivery: Locator
+    protected summary: Locator
+    protected transactions: Locator
+    protected return: Locator
+    protected delivery: Locator
 
     constructor(page: Page)  {
         super(page)

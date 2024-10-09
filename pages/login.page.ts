@@ -25,8 +25,7 @@ export class LoginPage extends BasePage {
             throw new Error('Please provide username and password to complete login')
         }
 
-        await this.page.goto('/')
-        await this.handleCookiesModal()
+        await this.loadPage()
 
         // Manually naviate to login through IDE
         await this.myAccountButton.click()

@@ -1,5 +1,6 @@
-import { expect } from '@playwright/test'
+import test, { expect } from '@playwright/test'
 import { Locator, Page } from 'playwright'
+import { NavigationBarItems, WomensSubItems } from '../utils/types'
 
 // Page to keep common locators and methods that can be used throughout the application, regardless of page
 export class BasePage {
@@ -8,7 +9,13 @@ export class BasePage {
     protected myAccountButton: Locator
     protected signInOption: Locator
     protected signOutOption: Locator
-    protected acceptCookiesButton: Locator    
+    protected acceptCookiesButton: Locator  
+    protected topNavigationBar: Locator
+    protected topNavItems: Locator
+    protected topNavSubItems: Locator
+    protected subItems: Locator
+    public myBagButton: Locator
+    public myBagGoToCheckout: Locator
 
     constructor(page: Page) {
         this.page = page
@@ -16,6 +23,18 @@ export class BasePage {
         this.signInOption = page.locator('a[title="sign in"]')
         this.signOutOption = page.locator('a[title="sign out"]')
         this.acceptCookiesButton = page.locator('button#onetrust-accept-btn-handler')
+        this.topNavigationBar = page.locator('div.gui-nav-container')
+        // Could have used a switch case and mapped every ID for these items, in a bigger project, but only marked visible to make it faster here
+        this.topNavItems = this.topNavigationBar.locator('li.gui-sub-nav:visible')
+        this.topNavSubItems = this.page.locator('div.gui-sub-nav-content:visible')
+        this.subItems = this.topNavSubItems.locator('li > a:visible')
+        this.myBagButton = this.page.locator('button.gui-minibag-show')
+        this.myBagGoToCheckout = this.page.locator('a#MBcheckout')
+    }
+
+    async loadPage() {
+        await this.page.goto('/')
+        await this.handleCookiesModal()
     }
 
     async handleCookiesModal() {
@@ -52,5 +71,33 @@ export class BasePage {
         await expect(this.signOutOption, 'Expect sign out to not be available to user not logged in').not.toBeVisible()
         await expect(this.signInOption, 'Expect sign in to be available').toBeVisible()
         // An idea here is to add a screenshot test to validate user is redirected to home page
+    }
+
+    /**
+     * Navigates to a sub page through top navigation bar
+     * 
+     * @param navigationBarItem - The navigation bar item to be hovered over.
+     * @param navigationSubItem - The sub item inside that container to be selected and navigated to.
+    */
+    async navigateToProducts(navigationBarItem: NavigationBarItems, navigationSubItem: WomensSubItems) {
+        // I was forced to use text in this occasion because not every element had title / name
+        // We can also use a switch case and map every item id, though it would take more work, but should be done in bigger projects
+        await test.step(`Navigating to ${navigationBarItem} > ${navigationSubItem}`, async () => {
+            (await this.getNavigationBarItem(navigationBarItem)).hover()
+            await expect(this.topNavSubItems, 'Waiting for sub item list to show up').toBeVisible()
+            await this.subItems.getByText(navigationSubItem, {exact: true}).click()
+        })
+    }
+
+    async getNavigationBarItem(navigationBarItem: string) {
+       return this.page.locator(`a[id*='topNav']:has-text('${navigationBarItem}'):visible`)
+    }
+
+    async goToCheckout() {
+        // Go to checkout by clicking the my bag button on the top right corner
+        // Need to be called only if items are added to bag, or checkout option will not be available
+        await this.myBagButton.click()
+        await expect(this.myBagGoToCheckout, 'Waiting for go to checkout option').toBeVisible()
+        await this.myBagGoToCheckout.click()
     }
 }
