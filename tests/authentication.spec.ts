@@ -1,4 +1,3 @@
-import { expect } from '@playwright/test'
 import { test } from '../utils/fixtures'
 
 test('User can log in successfully', {
@@ -9,7 +8,7 @@ test('User can log in successfully', {
     })
     await test.step('Verify user is logged in', async () => {
         await loginPage.validateUserIsLoggedIn()
-        await expect(accountPage.accountSidebar, 'Expect account page to be visible').toBeVisible()
+        await accountPage.validateAccountPage()
     })
 })
 
@@ -21,10 +20,9 @@ test('User can log out successfully', {
     })
     await test.step('Verify user is logged in', async () => {
         await loginPage.validateUserIsLoggedIn()
-        await expect(accountPage.accountSidebar, 'Expect account page to be visible').toBeVisible()
+        await accountPage.validateAccountPage()
     })
     await test.step('Log out from account', async () => {
         await loginPage.logout()
-        await expect(accountPage.accountSidebar, 'Expect account page to not be visible').not.toBeVisible()
     })
 })

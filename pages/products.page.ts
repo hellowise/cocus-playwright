@@ -9,6 +9,7 @@ export class ProductsPage extends BasePage {
     protected sortByButton: Locator
     protected productsPerPageButton: Locator
     protected products: Locator
+    protected header: Locator
     protected productTitle: Locator
     protected addToBagButton: Locator
     protected sizeGuide: Locator
@@ -26,7 +27,7 @@ export class ProductsPage extends BasePage {
         
         // Separate product elements >> should use separate pages for catalog / separate item page for bigger projects
         this.productTitle = this.page.locator('#productTitle')
-        this.addToBagButton = this.page.locator('a.btn-add-to-bag')
+        this.addToBagButton = this.page.locator('a[name="addToBag-main"]')
         this.sizeGuide = this.page.locator('#sizeGuideButton')
         this.sizeSelector = this.page.locator('select[id*="optionSize"]')
         this.postAddToBag = this.page.locator('div#postAddToBagModal')
@@ -34,15 +35,16 @@ export class ProductsPage extends BasePage {
     }
 
     async addRandomItemToBag() {
-        await expect(this.products.nth(1), 'Waiting for first product in page to be visible').toBeVisible()
-
         // Adds a random catalog item to bag
         const randomItem = await randomIntFromRange(await this.products.count())
         await this.openItemInPosition(randomItem)
 
         // Here we need an extra step to choose SIZE in case we are dealing with clothes
         if (await this.sizeGuide.count() >= 1) {
-            await selectRandom(this.sizeSelector)
+            // Some items have no size selector, some have it saying single size, this is here to treat that
+            if (await this.sizeGuide.isEnabled() === true) {
+                await selectRandom(this.sizeSelector)
+            }
         }
 
         // In case item in specific selected size is out of stock, needs a treatment, we will not dwell into that because it would be more time consuming

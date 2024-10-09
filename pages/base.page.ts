@@ -14,8 +14,9 @@ export class BasePage {
     protected topNavItems: Locator
     protected topNavSubItems: Locator
     protected subItems: Locator
-    public myBagButton: Locator
-    public myBagGoToCheckout: Locator
+    protected productsHeader: Locator
+    protected myBagButton: Locator
+    protected myBagGoToCheckout: Locator
 
     constructor(page: Page) {
         this.page = page
@@ -28,6 +29,7 @@ export class BasePage {
         this.topNavItems = this.topNavigationBar.locator('li.gui-sub-nav:visible')
         this.topNavSubItems = this.page.locator('div.gui-sub-nav-content:visible')
         this.subItems = this.topNavSubItems.locator('li > a:visible')
+        this.productsHeader = this.page.locator('div.category-header__text')
         this.myBagButton = this.page.locator('button.gui-minibag-show')
         this.myBagGoToCheckout = this.page.locator('a#MBcheckout')
     }
@@ -87,6 +89,7 @@ export class BasePage {
             await expect(this.topNavSubItems, 'Waiting for sub item list to show up').toBeVisible()
             await this.subItems.getByText(navigationSubItem, {exact: true}).click()
         })
+        await expect(this.productsHeader, 'Expect that header description includes sub item').toContainText(navigationSubItem)
     }
 
     async getNavigationBarItem(navigationBarItem: string) {
