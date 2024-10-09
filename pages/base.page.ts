@@ -4,12 +4,14 @@ import { Locator, Page } from 'playwright'
 // Page to keep common locators and methods that can be used throughout the application, regardless of page
 export class BasePage {
 
+    protected page: Page
     protected myAccountButton: Locator
     protected signInOption: Locator
     protected signOutOption: Locator
-    protected acceptCookiesButton: Locator
+    protected acceptCookiesButton: Locator    
 
     constructor(page: Page) {
+        this.page = page
         this.myAccountButton = page.locator('div.gui-my-account-selector')
         this.signInOption = page.locator('a[title="sign in"]')
         this.signOutOption = page.locator('a[title="sign out"]')
@@ -36,14 +38,14 @@ export class BasePage {
         // Close my account dropdown after checks
     }
 
-    async logout(page: Page) {
+    async logout() {
         // Logs out of current account
         await this.myAccountButton.click()
         await expect(this.signOutOption, 'Expect sign out to be available to logged in user').toBeVisible()
         await this.signOutOption.click()
 
         // After log out user is redirected to home page with unique sign off url
-        expect(page.url()).toContain('signoff=yes')
+        expect(this.page.url()).toContain('signoff=yes')
 
         // Validates logged out
         await this.myAccountButton.click()

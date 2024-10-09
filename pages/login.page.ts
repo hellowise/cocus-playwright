@@ -15,7 +15,7 @@ export class LoginPage extends BasePage {
         this.loginButton = page.locator('#signInButton')
     }
 
-    async login(page: Page, username?: string, password?: string) {
+    async login(username?: string, password?: string) {
         // If no username and password are given, assign default env ones
         username??= process.env.EMAIL
         password??= process.env.PASSWORD
@@ -25,7 +25,7 @@ export class LoginPage extends BasePage {
             throw new Error('Please provide username and password to complete login')
         }
 
-        await page.goto('/')
+        await this.page.goto('/')
         await this.handleCookiesModal()
 
         // Manually naviate to login through IDE
@@ -42,7 +42,7 @@ export class LoginPage extends BasePage {
         await expect(this.loginButton, 'Expected to be redirected out of login page after login').not.toBeVisible()
 
         // Expect statements can be either inside functions here or inside a test step in the test spec file, here I placed it here for simplicity and avoid repetition
-        expect(await page.title(), 'Validating user was redirected to account page after login').toContain('My Account')
+        expect(await this.page.title(), 'Validating user was redirected to account page after login').toContain('My Account')
     }
 
 }
