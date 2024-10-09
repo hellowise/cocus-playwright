@@ -1,30 +1,32 @@
 import { expect } from '@playwright/test'
 import { Locator, Page } from 'playwright'
+import { BasePage } from './base.page'
 
-export class LoginPage {
+export class LoginPage extends BasePage {
 
-    private myAccountButton: Locator
-    private signInOption: Locator
-    private acceptCookiesButton: Locator
     private usernameInput: Locator
     private passwordInput: Locator
     private loginButton: Locator
 
-    constructor(page: Page) {
-        this.myAccountButton = page.locator('div.gui-my-account-selector')
-        this.signInOption = page.locator('a[title="sign in"]')
-        this.acceptCookiesButton = page.locator('button#onetrust-accept-btn-handler')
+    constructor(page: Page)  {
+        super(page)
         this.usernameInput = page.locator('#username')
         this.passwordInput = page.locator('#password')
         this.loginButton = page.locator('#signInButton')
     }
 
-    async login(page: Page, username: string, password: string) {
-        await page.goto('/', { timeout: 40000 })
+    async login(page: Page, username?: string, password?: string) {
+        // If no username and password are given, assign default env ones
+        username??= process.env.EMAIL
+        password??= process.env.PASSWORD
 
-        // Handle cookies modal. Since we are running anonymous tabs, this will show up every time
-        await expect(this.acceptCookiesButton, 'Waiting for cookies modal to show up').toBeVisible()
-        await this.acceptCookiesButton.click()
+        // Login cannot be completed if either username of password are undefined, throws error
+        if (username == undefined || password == undefined) {
+            throw new Error('Please provide username and password to complete login')
+        }
+
+        await page.goto('/')
+        await this.handleCookiesModal()
 
         // Manually naviate to login through IDE
         await this.myAccountButton.click()
@@ -35,5 +37,12 @@ export class LoginPage {
         await this.usernameInput.fill(username)
         await this.passwordInput.fill(password)
         await this.loginButton.click()
+
+        // Wait until redirected out of login page after login
+        await expect(this.loginButton, 'Expected to be redirected out of login page after login').not.toBeVisible()
+
+        // Expect statements can be either inside functions here or inside a test step in the test spec file, here I placed it here for simplicity and avoid repetition
+        expect(await page.title(), 'Validating user was redirected to account page after login').toContain('My Account')
     }
+
 }
