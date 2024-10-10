@@ -1,11 +1,14 @@
 This project was build using Playwright v1.48.0 with Typescript.
 
+For test execution, you need to have and Node.JS installed in order to install dependencies.
+Check how to download in the [official documentation](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+
 After checking into the project main folder, follow the steps:
 - Replace credentials data in .env with valid credentials for login.
-- To install dependencies run either of the following (NPM is preferred simply because it was the choice for this project development):
+- To install dependencies run either of the following (NPM is preferred because it was the choice for this project development):
 
 ```console
-npx install
+npm install
 yarn install
 ```
 
@@ -27,7 +30,7 @@ npx playwright test --ui
 npx playwright test --grep @login
 ```
 
-Check https://playwright.dev/docs/test-annotations for more tagging options available for execution.
+Check [the official documentation](https://playwright.dev/docs/test-annotations) for more tagging options available for execution.
 
 Reports will be generated automatically after executions.
 - To see reports, run the following command:
