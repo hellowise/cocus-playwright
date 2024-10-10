@@ -19,6 +19,11 @@ export class CheckoutPage extends BasePage {
         this.promoSignedInUser = this.promoCode.locator('#claim_code_entry_form')
     }
 
+    /**
+     * Will validate visibility of go to checkout and payments trigger, and click it.
+     * 
+     * Call this method only inside checkout page or it will fail.
+    */
     async goToDeliveryAndPayment() {
         await expect(this.goToCheckoutTop, 'Expect Go To delivery and Payment button to be visible').toBeVisible()
         // Add randomized pick for bottom or top button
@@ -27,14 +32,22 @@ export class CheckoutPage extends BasePage {
         await this.goToCheckoutBottom.click()
     }
 
+    /**
+     * Will validate signed out user can shop but not use coupons.
+     *
+     * Call this method only inside checkout page with a signed out user or it will fail.
+    */
     async validateSignedOutUserCheckout() {
-        // Signed out user can shop but not use coupons
         await expect(this.promoSignedOutUser, 'Expect signed out user to have sign in option at checkout').toBeVisible()
         await expect(this.promoSignedOutUser, 'Expect signed out user to not be able to use coupons').toHaveText('Sign in or Register to Apply a Promotional Code', {ignoreCase: true})
     }
 
+    /**
+     * Will validate signed in user can shop and use coupons.
+     *
+     * Call this method only inside checkout page with a signed in user or it will fail.
+    */
     async validateSignedInUserCheckout() {
-        // Signed in user can shop and use coupons
         await expect(this.promoSignedInUser, 'Expect signed in user to have promo code form available').toBeVisible()
         await expect(this.promoCode, 'Expect signed in user to have an option for promo codes').toContainText('Have a promo code?', {ignoreCase: true})
     }

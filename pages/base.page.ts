@@ -2,7 +2,7 @@ import test, { expect } from '@playwright/test'
 import { Locator, Page } from 'playwright'
 import { NavigationBarItems, WomensSubItems } from '../utils/types'
 
-// Page to keep common locators and methods that can be used throughout the application, regardless of page
+// Page to keep common locators and methods that can be used throughout the application, regardless of page.
 export class BasePage {
 
     protected page: Page
@@ -25,7 +25,7 @@ export class BasePage {
         this.signOutOption = page.locator('a[title="sign out"]')
         this.acceptCookiesButton = page.locator('button#onetrust-accept-btn-handler')
         this.topNavigationBar = page.locator('div.gui-nav-container')
-        // Could have used a switch case and mapped every ID for these items, in a bigger project, but only marked visible to make it faster here
+        // Could have used a switch case and mapped every ID for these items, in a bigger project, but only marked visible to make it faster here.
         this.topNavItems = this.topNavigationBar.locator('li.gui-sub-nav:visible')
         this.topNavSubItems = this.page.locator('div.gui-sub-nav-content:visible')
         this.subItems = this.topNavSubItems.locator('li > a:visible')
@@ -34,56 +34,70 @@ export class BasePage {
         this.myBagGoToCheckout = this.page.locator('a#MBcheckout')
     }
 
+    /**
+     * Loads main page, handles cookies modal on first open.
+    */
     async loadPage() {
         await this.page.goto('/')
         await this.handleCookiesModal()
     }
 
+    /**
+     * Handle cookies modal. Since we are running anonymous tabs, this will show up every time.
+    */
     async handleCookiesModal() {
-        // Handle cookies modal. Since we are running anonymous tabs, this will show up every time
+        // We could use wait for state visible on elements rather than expects too. But expects have a better report logging on error, and the result is essentially the same.
         await expect(this.acceptCookiesButton, 'Waiting for cookies modal to show up').toBeVisible()
         await this.acceptCookiesButton.click()
         await expect(this.acceptCookiesButton, 'Waiting for cookies modal to disappear').not.toBeVisible()
-        // Depending on page behavior, this could be replaced with a try catch: for example, if cookie modal shows up in different occasions, but this works for this case
+        // Depending on page behavior, this could be replaced with a try catch: for example, if cookie modal shows up in different occasions, but this works for this case.
     }
 
+    /**
+     * Validate my account options for logged in user.
+     * 
+     * This method will fail if user is not previously logged in.
+    */
     async validateUserIsLoggedIn() {
-        // Validate my account options for logged in user
         await this.myAccountButton.click()
         await expect(this.signInOption, 'Expect sign in to not be available to logged in user').not.toBeVisible()
         await expect(this.signOutOption, 'Expect sign out to be available to logged in user').toBeVisible()
-        // Ideally we would validate every option in the my account dropdown, for for simplicity lets just check sign in for now
+        // Ideally we would validate every option in the my account dropdown, for for simplicity lets just check sign in for now.
 
         await this.myAccountButton.click()
         await expect(this.signOutOption).not.toBeVisible()
-        // Close my account dropdown after checks
+        // Close my account dropdown after checks.
     }
 
+    /**
+     * Logs out of current account.
+     * 
+     * This method will fail if user is not previously logged in.
+    */
     async logout() {
-        // Logs out of current account
         await this.myAccountButton.click()
         await expect(this.signOutOption, 'Expect sign out to be available to logged in user').toBeVisible()
         await this.signOutOption.click()
 
-        // After log out user is redirected to home page with unique sign off url
+        // After log out user is redirected to home page with unique sign off url.
         expect(this.page.url()).toContain('signoff=yes')
 
         // Validates logged out
         await this.myAccountButton.click()
         await expect(this.signOutOption, 'Expect sign out to not be available to user not logged in').not.toBeVisible()
         await expect(this.signInOption, 'Expect sign in to be available').toBeVisible()
-        // An idea here is to add a screenshot test to validate user is redirected to home page
+        // An idea here is to add a screenshot test to validate user is redirected to home page.
     }
 
     /**
-     * Navigates to a sub page through top navigation bar
+     * Navigates to a sub page through top navigation bar.
      * 
      * @param navigationBarItem - The navigation bar item to be hovered over.
      * @param navigationSubItem - The sub item inside that container to be selected and navigated to.
     */
     async navigateToProducts(navigationBarItem: NavigationBarItems, navigationSubItem: WomensSubItems) {
-        // I was forced to use text in this occasion because not every element had title / name
-        // We can also use a switch case and map every item id, though it would take more work, but should be done in bigger projects
+        // I was forced to use text in this occasion because not every element had title / name.
+        // We can also use a switch case and map every item id, though it would take more work, but should be done in bigger projects.
         await test.step(`Navigating to ${navigationBarItem} > ${navigationSubItem}`, async () => {
             (await this.getNavigationBarItem(navigationBarItem)).hover()
             await expect(this.topNavSubItems, 'Waiting for sub item list to show up').toBeVisible()
@@ -92,13 +106,23 @@ export class BasePage {
         await expect(this.productsHeader, 'Expect that header description includes sub item').toContainText(navigationSubItem)
     }
 
+    /**
+     * Returns a top navigation bar item with the given name.
+     * 
+     * @param navigationBarItem - The top navigation bar item name.
+     * @returns {Locator} - The top bar nav item with given text.
+    */
     async getNavigationBarItem(navigationBarItem: string) {
+        // This method can be removed if, as mentioned above, every item id is mapped rather than found by text.
        return this.page.locator(`a[id*='topNav']:has-text('${navigationBarItem}'):visible`)
     }
 
+    /**
+     * Go to checkout by clicking the my bag button on the top right corner.
+     * 
+     * Need to be called only if items are added to bag, or checkout option will not be available.
+    */
     async goToCheckout() {
-        // Go to checkout by clicking the my bag button on the top right corner
-        // Need to be called only if items are added to bag, or checkout option will not be available
         await this.myBagButton.click()
         await expect(this.myBagGoToCheckout, 'Waiting for go to checkout option').toBeVisible()
         await this.myBagGoToCheckout.click()

@@ -5,7 +5,7 @@ import { LoginPage } from '../pages/login.page'
 import { ProductsPage } from '../pages/products.page'
 import { CheckoutPage } from '../pages/checkout.page'
 
-// I made this page to keep fixtures in order to avoid code repetition, to keep items organized
+// I made this page to keep fixtures in order to avoid code repetition, to keep items organized.
 type PageFixtures = {
     homePage: BasePage,
     loginPage: LoginPage,

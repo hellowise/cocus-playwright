@@ -1,14 +1,14 @@
 import { test } from '../utils/fixtures'
 
 test('Logged in user can add items to bag', {
-    tag: '@positive'
+    tag: ['@positive', '@login']
 }, async ({ homePage, loginPage, productsPage, checkoutPage }) => {
     await test.step('Log in through home page', async () => {
         await loginPage.login()
         await loginPage.validateUserIsLoggedIn()
     })
     await test.step('Add item to bag', async () => {
-        await homePage.navigateToProducts('Womens', 'Accessories')
+        await homePage.navigateToProducts('Womens', 'Dresses')
         // With more time, we can add validations for the item name, price and picture through the whole process
         await productsPage.addRandomItemToBag()
     })

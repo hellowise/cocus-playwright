@@ -1,7 +1,7 @@
 import { test } from '../utils/fixtures'
 
 test('User can log in successfully', {
-    tag: '@positive'
+    tag: ['@positive', '@login']
 }, async ({ loginPage, accountPage }) => {
     await test.step('Log in through home page', async () => {
         await loginPage.login()
@@ -13,7 +13,7 @@ test('User can log in successfully', {
 })
 
 test('User can log out successfully', {
-    tag: '@positive'
+    tag: ['@positive', '@login', '@logout']
 }, async ({ loginPage, accountPage }) => {
     await test.step('Log in through home page', async () => {
         await loginPage.login()

@@ -15,14 +15,23 @@ export class LoginPage extends BasePage {
         this.loginButton = page.locator('#signInButton')
     }
 
+    /**
+     * Validates login elements visibility.
+    */
     async validateLoginScreen() {
         await expect(this.usernameInput, 'Waiting for username input to be visible').toBeVisible()
         await expect(this.passwordInput, 'Waiting for password input to be visible').toBeVisible()
         await expect(this.loginButton, 'Waiting for login button to be visible').toBeVisible()
     }
 
+    /**
+     * Logs into application with given credentials.
+     * 
+     * If no username and password are given, assign default env ones.
+     * @param username - Username to be used on login.
+     * @param password - Password for given username.
+    */
     async login(username?: string, password?: string) {
-        // If no username and password are given, assign default env ones
         username??= process.env.EMAIL
         password??= process.env.PASSWORD
 
@@ -42,6 +51,8 @@ export class LoginPage extends BasePage {
         await this.validateLoginScreen()
         await this.usernameInput.fill(username)
         await this.passwordInput.fill(password)
+
+        await expect(this.loginButton, 'Expect login button to be enabled').toBeEnabled()
         await this.loginButton.click()
 
         // Wait until redirected out of login page after login

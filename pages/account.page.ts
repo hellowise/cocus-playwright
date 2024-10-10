@@ -19,6 +19,11 @@ export class AccountPage extends BasePage {
         this.delivery = this.accountSidebar.locator('#deliverySubscriptionsNav')
     }
 
+    /**
+     * Validates the account page through checking visibility of sidebar first items. Will fail if not called inside accounts page.
+     * 
+     * Can be expanded to validate every item on the account page, or shortened to only important ones.
+    */
     async validateAccountPage() { 
         await expect(this.accountSidebar, 'Waiting for account sidebar to be visible').toBeVisible()
         await expect(this.summary, 'Waiting for summary button to be visible').toBeVisible()
