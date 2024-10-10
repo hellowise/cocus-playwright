@@ -57,5 +57,7 @@ I came across some failures that were app-sided, like unexpected errors and some
 Tests might fail running in parallel because there is only one user available. This can be updated to have more users, but due to the small size of the project, it wasn't implemented.
 Make sure to run tests one by one to ensure there will be no failures due to action override in the same user.
 
+Click [here](https://drive.google.com/drive/folders/1eTUtTMQydJ7s_cgmcBPvx4WJ5qdlPnp1?usp=drive_link) if you want to download this project's test report examples.
+
 - **NOTE**: In case you are experience protocol errors during execution, switch browsers to firefox.
 Chromium can have an issue loading the page.
